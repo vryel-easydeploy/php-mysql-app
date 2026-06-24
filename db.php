@@ -12,22 +12,37 @@ try {
         $pass
     );
 
-    echo "Database connected successfully!";
-}
-catch(PDOException $e) {
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    echo "Database connected successfully!<br><br>";
+
+    // Insert a test user
+    $stmt = $pdo->prepare(
+        "INSERT INTO users (name, email)
+         VALUES (?, ?)"
+    );
+
+    $stmt->execute([
+        "John Doe",
+        "john@example.com"
+    ]);
+
+    echo "User inserted successfully!<br><br>";
+
+    // Display all users
+    $result = $pdo->query("SELECT * FROM users");
+
+    echo "<h2>Users Table</h2>";
+
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        echo "ID: " . $row['id'] .
+             " | Name: " . $row['name'] .
+             " | Email: " . $row['email'] .
+             "<br>";
+    }
+
+} catch (PDOException $e) {
     die("Connection failed: " . $e->getMessage());
 }
-?>
-<?php
 
-$sql = "
-CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100),
-    email VARCHAR(100)
-)";
-
-$pdo->exec($sql);
-
-echo "Table created successfully!";
 ?>
